@@ -3,7 +3,6 @@ import environ
 
 @environ.config(prefix="MLFLOW")
 class MlflowConfig:
-
     @environ.config
     class Host:
         ip = environ.var(

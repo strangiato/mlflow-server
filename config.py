@@ -17,7 +17,9 @@ class MlflowConfig:
     @environ.config
     class Log:
         level = environ.var("INFO")
-        format = environ.var()
+        format = environ.var(
+            "%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s"
+        )
 
     log = environ.group(Log)
 

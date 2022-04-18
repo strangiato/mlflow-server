@@ -1,0 +1,31 @@
+MLFLOW_HOST=${MLFLOW_HOST:-"0.0.0.0"}
+MLFLOW_PORT=${MLFLOW_PORT:-"5000"}
+
+echo "---> Container Environment Variables"
+# execute the helper script to display env vars
+python config.py
+
+echo "---> Connecting to database..."
+DATABASE_URI="postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}"
+REDACTED_DATABASE_URI="postgresql://${DATABASE_USERNAME}:<database-password>@${DATABASE_HOST}/${DATABASE_NAME}"
+echo ${REDACTED_DATABASE_URI}
+
+echo "---> Utilizing S3..."
+ARTIFACT_ROOT="s3://${MLFLOW_S3_BUCKET_NAME}"
+
+echo "MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}"
+echo "ARTIFACT_ROOT: ${ARTIFACT_ROOT}"
+
+echo "Be sure to set the following environment variables in the MLFlow client:
+
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+
+"
+
+echo "---> Starting MLFlow Server"
+mlflow server \
+    --backend-store-uri ${DATABASE_URI} \
+    --default-artifact-root ${ARTIFACT_ROOT}
+    --host ${MLFLOW_HOST} \
+    --port ${MLFLOW_PORT}

@@ -1,0 +1,7 @@
+tox
+flake8
+flake8-import-order
+flake8-docstrings
+flake8-builtins
+flake8-bandit
+black

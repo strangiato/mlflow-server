@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: mlflow-server
-      TAGS: latest 1.25 1.25.1 ${{ github.sha }}
+      TAGS: v1 ${{ github.sha }}
       
     steps:
 
@@ -37,6 +37,6 @@ jobs:
         with:
           image: ${{ steps.build_image.outputs.image }}
           tags: ${{ steps.build_image.outputs.tags }}
-          registry: quay.io/${{ secrets.QUAY_USERNAME }}
+          registry: quay.io/troyer
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}

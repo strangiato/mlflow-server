@@ -27,7 +27,7 @@ jobs:
         with:
           path_context: 'mlflow-server'
           # Builder image for a java project
-          builder_image: 'quay.io/sclorg/python-39-minimal:latest'
+          builder_image: 'registry.access.redhat.com/ubi8/python-39:latest'
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ env.TAGS }}
 

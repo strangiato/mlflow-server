@@ -20,7 +20,7 @@ class AppConfig:
 
         url = environ.var(help="The url for the database")
 
-        host = environ.var(help="The hostname of the database")
+        name = environ.var(help="The name of the database")
 
         username = environ.var(help="The username for the database")
 

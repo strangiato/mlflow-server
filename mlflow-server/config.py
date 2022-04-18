@@ -11,7 +11,7 @@ class AppConfig:
         default="0.0.0.0", help="The host address for MLFlow server to start."
     )
 
-    port = environ.var(default="8080", help="The port for MLFlow server to start.")
+    port = environ.var(default="5000", help="The port for MLFlow server to start.")
 
 
     @environ.config()

@@ -3,21 +3,16 @@
 import environ
 
 
-@environ.config()
+@environ.config(prefix="MLFLOW")
 class AppConfig:
     """Application configuration object used for managing environment variables."""
 
-    @environ.config()
-    class MLFlow:
-        """Configuration object for the mlflow options."""
+    host = environ.var(
+        default="0.0.0.0", help="The host address for MLFlow server to start."
+    )
 
-        host = environ.var(
-            default="0.0.0.0", help="The host address for MLFlow server to start."
-        )
+    port = environ.var(default="8080", help="The port for MLFlow server to start.")
 
-        port = environ.var(default="8080", help="The port for MLFlow server to start.")
-
-    mlflow = environ.group(MLFlow)
 
     @environ.config()
     class Database:
@@ -38,12 +33,10 @@ class AppConfig:
         """App configuration object used for managing s3 objects."""
 
         endpoint_url = environ.var(
-            name="MLFLOW_S3_ENDPOINT_URL",
             help="The S3 endpoint url that MLFlow will utilize for artifact storage",
         )
 
         bucket_name = environ.var(
-            name="MLFLOW_S3_BUCKET_NAME",
             help="The name of the S3 bucket that MLFlow will utilize for artifact storage",
         )
 

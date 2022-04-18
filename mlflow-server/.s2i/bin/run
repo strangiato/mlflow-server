@@ -6,8 +6,8 @@ echo "---> Container Environment Variables"
 python config.py
 
 echo "---> Connecting to database..."
-DATABASE_URI="postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}"
-REDACTED_DATABASE_URI="postgresql://${DATABASE_USERNAME}:<database-password>@${DATABASE_HOST}/${DATABASE_NAME}"
+DATABASE_URI="postgresql://${MLFLOW_DATABASE_USERNAME}:${MLFLOW_DATABASE_PASSWORD}@${MLFLOW_DATABASE_HOST}/${MLFLOW_DATABASE_NAME}"
+REDACTED_DATABASE_URI="postgresql://${MLFLOW_DATABASE_USERNAME}:<database-password>@${MLFLOW_DATABASE_HOST}/${MLFLOW_DATABASE_NAME}"
 echo ${REDACTED_DATABASE_URI}
 
 echo "---> Utilizing S3..."

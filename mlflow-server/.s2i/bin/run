@@ -32,6 +32,6 @@ echo ""
 echo "---> Starting MLFlow Server"
 mlflow server \
     --backend-store-uri ${DATABASE_URI} \
-    --default-artifact-root ${ARTIFACT_ROOT}
+    --default-artifact-root ${ARTIFACT_ROOT} \
     --host ${MLFLOW_HOST} \
     --port ${MLFLOW_PORT}

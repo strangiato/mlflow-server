@@ -1,5 +1,7 @@
 # MLFlow Server
 
+[![Docker Repository on Quay](https://quay.io/repository/troyer/mlflow-server/status "Docker Repository on Quay")](https://quay.io/repository/troyer/mlflow-server)
+
 An MLFlow Server designed to work with OpenShift.
 
 ## Environmnet Variables

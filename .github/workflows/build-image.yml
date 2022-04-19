@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: S2I CI
 
 on:
   push:
@@ -44,9 +44,6 @@ jobs:
             echo "::set-output name=FULL_VERSION::${FULL_VERSION}"
             echo "::set-output name=MINOR_VERSION::${MINOR_VERSION}"
         id: version
-
-      - name: Full Version
-        run: echo "${{ steps.version.outputs.FULL_VERSION }}"
 
       - name: Add tags
         run: | 

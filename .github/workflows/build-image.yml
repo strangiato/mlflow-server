@@ -49,7 +49,7 @@ jobs:
         run: echo "${{ steps.version.outputs.FULL_VERSION }}"
 
       - name: list images
-        run: podman image ls
+        run: docker image ls
 
       # Push Image to Quay registry
       - name: Push To Quay Action

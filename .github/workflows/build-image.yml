@@ -48,6 +48,9 @@ jobs:
       - name: Full Version
         run: echo "${{ steps.version.outputs.FULL_VERSION }}"
 
+      - name: list images
+        run: podman image ls
+
       # Push Image to Quay registry
       - name: Push To Quay Action
         uses: redhat-actions/push-to-registry@v2

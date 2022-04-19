@@ -50,9 +50,22 @@ jobs:
     env:
       REGISTRY: quay.io/troyer
       IMAGE_NAME: mlflow-server
-      TAGS: v1 ${{ github.sha }}
     
     steps:
+      - name: Checkout 
+        uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
+        
+      - name: Retrieve version
+        uses: addnab/docker-run-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          run: |
+            echo "::set-output name=FULL_VERSION::$(pip show mlflow | grep -i version | awk '{print $2}')"
+        id: version-test
+
+      - name: Full Version
+        run: echo "${{ steps.version-test.outputs.FULL_VERSION }}"
+
       - name: Retrieve version
         uses: addnab/docker-run-action@v3
         with:
@@ -64,7 +77,7 @@ jobs:
             revision=`echo $FULL_VERSION | cut -d. -f3`
             MINOR_VERSION=$(echo "$major.$minor")
             echo "::set-output name=FULL_VERSION::${FULL_VERSION}"
-            echo "::set-output name=FULL_VERSION::${MINOR_VERSION}"
+            echo "::set-output name=MINOR_VERSION::${MINOR_VERSION}"
         id: version
 
       - name: Full Version

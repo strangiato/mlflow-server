@@ -31,6 +31,29 @@ jobs:
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ env.TAGS }}
 
+      - name: image
+        run: echo ${{ steps.build_image.outputs.image }}
+
+      - name: Retrieve version
+        uses: addnab/docker-run-action@v3
+        with:
+          images: ${{ steps.build_image.outputs.image }}
+          run: |
+            FULL_VERSION=$(pip show mlflow | grep -i version | awk '{print $2}')
+            major=`echo $FULL_VERSION | cut -d. -f1`
+            minor=`echo $FULL_VERSION | cut -d. -f2`
+            revision=`echo $FULL_VERSION | cut -d. -f3`
+            MINOR_VERSION=$(echo "$major.$minor")
+            echo "::set-output name=FULL_VERSION::${FULL_VERSION}"
+            echo "::set-output name=FULL_VERSION::${MINOR_VERSION}"
+        id: version
+
+      - name: Full Version
+        run: echo "${{ steps.version.outputs.FULL_VERSION }}"
+
+      - name: Minor Version
+        run: echo "${{ steps.version.outputs.MINOR_VERSION }}"
+
       # Push Image to Quay registry
       - name: Push To Quay Action
         uses: redhat-actions/push-to-registry@v2

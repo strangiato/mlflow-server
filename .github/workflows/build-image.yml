@@ -48,6 +48,11 @@ jobs:
       - name: Full Version
         run: echo "${{ steps.version.outputs.FULL_VERSION }}"
 
+      - name: Add tags
+        run: | 
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.MAIN_TAG }} ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.FULL_VERSION }}
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.MAIN_TAG }} ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.MINOR_VERSION }}
+
       - name: list images
         run: docker image ls
 

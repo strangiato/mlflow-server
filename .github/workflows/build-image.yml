@@ -14,7 +14,7 @@ jobs:
     env:
       REGISTRY: quay.io/troyer
       IMAGE_NAME: mlflow-server
-      TAGS: v1 ${{ github.sha }}
+      MAIN_TAG: latest-dev
       
     steps:
 
@@ -27,10 +27,26 @@ jobs:
         uses: redhat-actions/s2i-build@v2
         with:
           path_context: 'mlflow-server'
-          # Builder image for a java project
           builder_image: 'registry.access.redhat.com/ubi8/python-39:latest'
           image: ${{ env.IMAGE_NAME }}
-          tags: ${{ env.TAGS }}
+          tags: ${{ env.MAIN_TAG }}
+
+      - name: Retrieve version
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.IMAGE_NAME }}:${{ env.MAIN_TAG }}
+          run: |
+            FULL_VERSION=$(pip show mlflow | grep -i version | awk '{print $2}')
+            major=`echo $FULL_VERSION | cut -d. -f1`
+            minor=`echo $FULL_VERSION | cut -d. -f2`
+            revision=`echo $FULL_VERSION | cut -d. -f3`
+            MINOR_VERSION=$(echo "$major.$minor")
+            echo "::set-output name=FULL_VERSION::${FULL_VERSION}"
+            echo "::set-output name=MINOR_VERSION::${MINOR_VERSION}"
+        id: version
+
+      - name: Full Version
+        run: echo "${{ steps.version.outputs.FULL_VERSION }}"
 
       # Push Image to Quay registry
       - name: Push To Quay Action
@@ -55,16 +71,6 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
 
-      - name: Retrieve version
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          run: |
-            echo "::set-output name=FULL_VERSION::$(pip show mlflow | grep -i version | awk '{print $2}')"
-        id: version-test
-
-      - name: Full Version
-        run: echo "${{ steps.version-test.outputs.FULL_VERSION }}"
 
       - name: Retrieve version
         uses: addnab/docker-run-action@v3

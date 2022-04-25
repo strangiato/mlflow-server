@@ -1,4 +1,4 @@
-name: S2I CI
+name: Build Image
 
 on:
   push:

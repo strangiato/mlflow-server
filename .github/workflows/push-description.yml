@@ -1,6 +1,10 @@
 name: Push README to Quay.io
-on: push
+on:
+  push:
+    branches: [ main ]
+
 jobs:
+
   PushContainerReadme:
     runs-on: ubuntu-latest
     name: Push README to Quay.io

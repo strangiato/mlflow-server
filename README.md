@@ -1,5 +1,7 @@
 # MLFlow Server
 
+![Image Build](https://github.com/strangiato/mlflow-server/actions/workflows/build-image.yml/badge.svg?event=push)
+
 An MLFlow Server designed to work with OpenShift.
 
 https://github.com/strangiato/mlflow-server

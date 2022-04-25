@@ -2,6 +2,8 @@
 
 An MLFlow Server designed to work with OpenShift.
 
+https://github.com/strangiato/mlflow-server
+
 ## Environmnet Variables
 
 The following environment variables are configurable in this image:

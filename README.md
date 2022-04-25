@@ -2,11 +2,9 @@
 
 An MLFlow Server designed to work with OpenShift.
 
-![Image Build](https://github.com/strangiato/mlflow-server/actions/workflows/build-image.yml/badge.svg?event=push)
+[![Build Image](https://github.com/strangiato/mlflow-server/actions/workflows/build-image.yml/badge.svg?event=push)](https://github.com/strangiato/mlflow-server/actions/workflows/build-image.yml)
 
-[![GitHub](https://img.shields.io/badge/GitHub-repo-blue.svg)](https://github.com/strangiato/mlflow-server)
-
-[![Quay.io](https://img.shields.io/badge/quay.io-image-blue.svg)](https://quay.io/repository/troyer/mlflow-server)
+[![GitHub](https://img.shields.io/badge/GitHub-repo-blue.svg)](https://github.com/strangiato/mlflow-server) [![Quay.io](https://img.shields.io/badge/Quay.io-image-blue.svg)](https://quay.io/repository/troyer/mlflow-server)
 
 ## Environmnet Variables
 

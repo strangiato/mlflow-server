@@ -12,6 +12,7 @@ jobs:
     name: Build Image    
     runs-on: ubuntu-latest
     env:
+      BASE_IMAGE: 'registry.access.redhat.com/ubi8/python-39:latest'
       REGISTRY: quay.io/troyer
       IMAGE_NAME: mlflow-server
       MAIN_TAG: latest-dev
@@ -27,7 +28,7 @@ jobs:
         uses: redhat-actions/s2i-build@v2
         with:
           path_context: 'mlflow-server'
-          builder_image: 'registry.access.redhat.com/ubi8/python-39:latest'
+          builder_image: ${{ env.BASE_IMAGE }}
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ env.MAIN_TAG }}
 

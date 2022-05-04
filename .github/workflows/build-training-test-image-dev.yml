@@ -1,0 +1,65 @@
+name: Build Training Test Image Dev
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - '*'
+      - '!main'
+    paths: 
+      - 'examples/sklearn-wine/**'
+
+jobs:
+  
+  build:
+    name: Build Image    
+    runs-on: ubuntu-latest
+    env:
+      BASE_IMAGE: 'registry.access.redhat.com/ubi8/python-39:latest'
+      REGISTRY: quay.io/troyer
+      IMAGE_NAME: mlflow-server-training-test
+      MAIN_TAG: latest-dev
+      
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Setup S2i and Build container image
+      - name: Setup and Build
+        id: build_image
+        uses: redhat-actions/s2i-build@v2
+        with:
+          path_context: 'examples/sklearn-wine'
+          builder_image: ${{ env.BASE_IMAGE }}
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.MAIN_TAG }}
+
+      - name: Retrieve version
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.IMAGE_NAME }}:${{ env.MAIN_TAG }}
+          run: |
+            FULL_VERSION=$(pip show mlflow | grep -i version | awk '{print $2}')
+            major=`echo $FULL_VERSION | cut -d. -f1`
+            minor=`echo $FULL_VERSION | cut -d. -f2`
+            revision=`echo $FULL_VERSION | cut -d. -f3`
+            MINOR_VERSION=$(echo "$major.$minor")
+            echo "::set-output name=FULL_VERSION::${FULL_VERSION}"
+            echo "::set-output name=MINOR_VERSION::${MINOR_VERSION}"
+        id: version
+
+      - name: Add tags
+        run: | 
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.MAIN_TAG }} ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.FULL_VERSION }}-dev
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.MAIN_TAG }} ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.MINOR_VERSION }}-dev
+
+      # Push Image to Quay registry
+      - name: Push To Quay Action
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: ${{ steps.build_image.outputs.tags }} latest ${{ steps.version.outputs.FULL_VERSION }}-dev ${{ steps.version.outputs.MINOR_VERSION }}-dev
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}

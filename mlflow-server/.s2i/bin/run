@@ -25,8 +25,12 @@ echo "ARTIFACT_ROOT: ${ARTIFACT_ROOT}"
 
 echo ""
 
-echo "Be sure to set the following environment variables in the MLFlow client:
+echo "To connect your client application to this MLFlow server, set the following option in your python application:
 
+mlflow.set_tracking_uri('<service/route to mlflow-server>')
+
+In addition, you will need to set the following environment variables:
+MLFLOW_S3_ENDPOINT_URL
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 "

@@ -64,9 +64,10 @@ def train(in_alpha, in_l1_ratio, experiment):
     else:
         l1_ratio = float(in_l1_ratio)
 
+    mlflow.set_experiment(experiment)
+
     # Useful for multiple runs (only doing one run in this sample notebook)    
     with mlflow.start_run():
-        mlflow.set_experiment(experiment)
         # Execute ElasticNet
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
         lr.fit(train_x, train_y)

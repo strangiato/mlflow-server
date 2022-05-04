@@ -19,7 +19,7 @@ load_dotenv()
 mlflow.set_tracking_uri(os.getenv('MLFLOW_TRACKING_URI'))
 
 # Wine Quality Sample
-def train(in_alpha, in_l1_ratio):
+def train(in_alpha, in_l1_ratio, experiment):
 
     logging.basicConfig(level=logging.WARN)
     logger = logging.getLogger(__name__)

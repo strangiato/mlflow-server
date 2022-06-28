@@ -18,7 +18,7 @@ To access charts from this from the cli repository add it:
 
 ```sh
 helm repo add strangiato https://strangiato.github.io/helm-charts/
-helm repo update strangiato
+helm repo update
 helm install [release-name] strangiato/mlflow-server
 ```
 

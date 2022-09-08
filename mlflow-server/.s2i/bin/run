@@ -28,18 +28,20 @@ echo ""
 echo "To connect your client application to this MLFlow server, set the following option in your python application:
 
 mlflow.set_tracking_uri('<service/route to mlflow-server>')
-
-In addition, you will need to set the following environment variables:
-MLFLOW_S3_ENDPOINT_URL
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
 "
+
+# In addition, you will need to set the following environment variables:
+# MLFLOW_S3_ENDPOINT_URL
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
+# "
 
 echo ""
 
 echo "---> Starting MLFlow Server"
 mlflow server \
     --backend-store-uri ${DATABASE_URI} \
-    --default-artifact-root ${ARTIFACT_ROOT} \
+    --artifacts-destination ${ARTIFACT_ROOT} \
+    --serve-artifacts \
     --host ${MLFLOW_HOST} \
     --port ${MLFLOW_PORT}

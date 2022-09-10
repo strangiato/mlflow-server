@@ -34,6 +34,8 @@ jobs:
           builder_image: ${{ env.BASE_IMAGE }}
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ env.MAIN_TAG }}
+          env_vars:
+            ENABLE_PIPENV=true
 
       - name: Retrieve version
         uses: addnab/docker-run-action@v3

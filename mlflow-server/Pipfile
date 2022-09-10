@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+mlflow = "~=1.28.0"
+boto3 = "==1.*"
+psycopg2-binary = "*"
+environ-config = "*"
+
+[dev-packages]
+tox = "*"
+flake8 = "*"
+flake8-import-order = "*"
+flake8-docstrings = "*"
+flake8-builtins = "*"
+flake8-bandit = "*"
+black = "*"
+
+[requires]
+python_version = "3.9"

@@ -1,11 +1,4 @@
-# MLFLOW_HOST=${MLFLOW_HOST:-"0.0.0.0"}
-# MLFLOW_PORT=${MLFLOW_PORT:-"5000"}
-
-# echo "---> Container Environment Variables"
-# # execute the helper script to display env vars
-# python config.py
-
-# echo ""
+#!/bin/sh
 
 echo "---> Connecting to database..."
 

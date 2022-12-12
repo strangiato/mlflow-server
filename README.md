@@ -6,11 +6,15 @@ An MLFlow Server designed to work with OpenShift.
 
 [![GitHub](https://img.shields.io/badge/GitHub-repo-blue.svg)](https://github.com/strangiato/mlflow-server) [![Quay.io](https://img.shields.io/badge/Quay.io-image-blue.svg)](https://quay.io/repository/troyer/mlflow-server)
 
-## Helm Chart
+# Helm Chart
 
 A Helm chart for deploying mlflow on OpenShift
 
-![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.27](https://img.shields.io/badge/AppVersion-1.27-informational?style=flat-square)
+![Version: 0.5.6](https://img.shields.io/badge/Version-0.5.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0](https://img.shields.io/badge/AppVersion-2.0-informational?style=flat-square)
+
+## Pre-Reqs
+
+This chart utilizes components from the Crunch Postgres Operator and OpenShift Data Foundations in the default configuration.  The chart expects both operators to be installed on the cluster prior to deploying.
 
 ## Installing the Chart
 
@@ -36,7 +40,7 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: "mlflow-server"
-    version: "0.2.2"
+    version: "0.5.6"
     repository: "https://strangiato.github.io/helm-charts/"
 ```
 
@@ -46,6 +50,8 @@ dependencies:
 * <https://github.com/strangiato/mlflow-server>
 
 ## Requirements
+
+Kubernetes: `>= 1.21.0`
 
 | Repository | Name | Version |
 |------------|------|---------|
@@ -61,6 +67,7 @@ dependencies:
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | crunchyPostgres.enabled | bool | `true` | Enable creation of a postgres instance using crunchyPostgres operator |
+| database.migration.enabled | bool | `false` |  |
 | fullnameOverride | string | `""` | String to fully override fullname template |
 | image.pullPolicy | string | `"IfNotPresent"` | The docker image pull policy |
 | image.repository | string | `"quay.io/troyer/mlflow-server"` | The image repository to use |
@@ -73,10 +80,17 @@ dependencies:
 | ingress.tls | list | `[]` |  |
 | nameOverride | string | `""` | String to partially override fullname template (will maintain the release name) |
 | nodeSelector | object | `{}` | Node selector for the MlFlow Server pod |
-| objectBucketClaim.annotations | object | `{}` | Additional custom annotations for the objectBucketClaim |
-| objectBucketClaim.bucketclass | string | `"noobaa-default-bucket-class"` | BucketClass name for the creation of the objectBucketClaim |
-| objectBucketClaim.enabled | bool | `true` | Enable creation of s3 bucket with objectBucketClaim for artifact storage |
-| objectBucketClaim.storageClassName | string | `"openshift-storage.noobaa.io"` | StorageClassName for creation of the objectBucketClaim |
+| objectStorage.mlflowBucketName | string | `"mlflow"` | Name of the s3 bucket if the objectBucketClaim is disabled |
+| objectStorage.objectBucketClaim.annotations | object | `{}` | Additional custom annotations for the objectBucketClaim |
+| objectStorage.objectBucketClaim.bucketclass | string | `"noobaa-default-bucket-class"` | BucketClass name for the creation of the objectBucketClaim |
+| objectStorage.objectBucketClaim.enabled | bool | `true` | Enable creation of s3 bucket with objectBucketClaim for artifact storage |
+| objectStorage.objectBucketClaim.storageClassName | string | `"openshift-storage.noobaa.io"` | StorageClassName for creation of the objectBucketClaim |
+| objectStorage.s3AccessKeyId | string | `""` | S3 Access Key ID if the objectBucketClaim is disabled |
+| objectStorage.s3EndpointUrl | string | `""` | URL for s3 endpoint if the objectBucketClaim is disabled |
+| objectStorage.s3SecretAccessKey | string | `""` | S3 Secret Access Key if the objectBucketClaim is disabled |
+| openshiftOauth.enableBearerTokenAccess | bool | `false` | Enable access to MLFlow using an OpenShift Bearer Token.  This feature enables users from outside of the cluster to read/write to MLFlow using the API.   Warning: This feature requires cluster admin to install. |
+| openshiftOauth.enabled | bool | `true` | Secures MLFlow with OpenShift Oauth Proxy.  If disabling this option it is recommended to set `route.tls.termination: edge`. |
+| openshiftOauth.resources | object | `{}` |  |
 | podAnnotations | object | `{}` | Map of annotations to add to the pods |
 | podSecurityContext | object | `{}` |  |
 | replicaCount | int | `1` | replicas of MLFlow Server |
@@ -87,9 +101,9 @@ dependencies:
 | route.path | string | `""` | The path for the OpenShift route |
 | route.tls.enabled | bool | `true` | Enable secure route settings |
 | route.tls.insecureEdgeTerminationPolicy | string | `"Redirect"` | Insecure route termination policy |
-| route.tls.termination | string | `"edge"` | Secure route termination policy |
+| route.tls.termination | string | `"reencrypt"` | Secure route termination policy |
 | securityContext | object | `{}` |  |
-| service.port | int | `80` | MLFlow server port |
+| service.port | int | `8080` | MLFlow server port |
 | service.type | string | `"ClusterIP"` | Kubernetes Service type |
 | serviceAccount.annotations | object | `{}` | Additional custom annotations for the ServiceAccount |
 | serviceAccount.create | bool | `true` | Enable creation of ServiceAccount for MLFlow Server pod |
@@ -99,5 +113,25 @@ dependencies:
 | trainingTestImage.repository | string | `"quay.io/troyer/mlflow-server-training-test"` | The image repository used for the helm training test |
 | trainingTestImage.tag | string | Chart appVersion | The image tag to use |
 
+## Usage
+
+### Utilizing MLFlow from Outside the Cluster with OAuth
+
+When accessing MLFlow from outside of the cluster with OAuth enabled, the route is secured by an OpenShift OAuth Proxy.  This OAuth proxy by default will only allow users to access MLFlow using the UI. 
+
+If you wish to run training processes from outside of the cluster that write to MLFlow you must set `enableBearerTokenAccess: true`.  This option requires additional permissions to be granted to the MLFlow Service Account which requires cluster admin privileges.
+
+Once this option is enabled you can set the following environment variable in your training environment and MLFlow will automatically pass your Bearer Token to the OpenShift OAuth Proxy and authenticate any API calls MLFlow makes to the server.
+
+```
+MLFLOW_TRACKING_TOKEN
+```
+
+To retrieve your token from openshift run the following command:
+
+```sh
+oc whoami --show-token
+```
+
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.10.0](https://github.com/norwoodj/helm-docs/releases/v1.10.0)
+Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)

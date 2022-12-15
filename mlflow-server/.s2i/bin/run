@@ -37,5 +37,6 @@ mlflow server \
     --backend-store-uri ${DATABASE_URI} \
     --artifacts-destination ${ARTIFACT_ROOT} \
     --serve-artifacts \
+    --expose-prometheus '\metrics' \
     --host ${MLFLOW_HOST} \
     --port ${MLFLOW_PORT}

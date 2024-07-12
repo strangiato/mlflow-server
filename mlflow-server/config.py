@@ -2,7 +2,7 @@
 
 import environ
 
-
+ 
 @environ.config(prefix="MLFLOW")
 class AppConfig:
     """Application configuration object used for managing environment variables."""

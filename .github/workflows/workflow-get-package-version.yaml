@@ -11,11 +11,13 @@ on:
         default: mlflow
     outputs:
       package-version:
-        value: ${{ jobs.get-version.package-version.package_version }}
+        value: ${{ jobs.get-version.outputs.package-version }}
 
 jobs:
   get-version:
     runs-on: ubuntu-latest
+    outputs:
+      package-version: ${{ steps.package-version.outputs.package_version }}
     steps:
       - name: Checkout Repository
         id: checkout

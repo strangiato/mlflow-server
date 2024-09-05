@@ -82,6 +82,7 @@ jobs:
           docker tag ${{ inputs.image-name }}:${{ steps.tags.outputs.latest_tag }} ${{ steps.tags.outputs.full_version_tag }}
           docker tag ${{ inputs.image-name }}:${{ steps.tags.outputs.latest_tag }} ${{ steps.tags.outputs.minor_version_tag }}
           docker tag ${{ inputs.image-name }}:${{ steps.tags.outputs.latest_tag }} ${{ steps.tags.outputs.date_tag }}
+          docker image ls
 
       - name: Push-Image
         uses: redhat-actions/push-to-registry@v2

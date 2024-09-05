@@ -1,0 +1,94 @@
+name: build-image
+on:
+  workflow_call:
+    inputs:
+      registry:
+        required: true
+        type: string
+      image-name:
+        required: true
+        type: string
+      context:
+        required: true
+        type: string
+      version-tag:
+        required: true
+        type: string
+      tag-suffix:
+        required: true
+        type: string
+      base-image:
+        required: false
+        type: string
+        default: 'registry.access.redhat.com/ubi9/python-311:latest'
+    secrets:
+      registry-username:
+        required: true
+      registry-password:
+        required: true
+    outputs:
+      target_tag:
+        value: ${{ jobs.build-image.outputs.target_tag }}
+
+jobs:
+  build-image:
+    name: Build Image
+    runs-on: ubuntu-latest
+    outputs:
+      target_tag: ${{ steps.tags.outputs.date_tag }}
+    steps:
+
+      - name: Checkout Repository
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: downgrade docker 
+        run: |
+          apt-cache madison docker.io
+          sudo apt-get remove containerd.io
+          sudo apt-get install docker.io=24.0.7-0ubuntu2~22.04.1
+
+      - name: Generate tags
+        id: tags
+        run: |
+          LATEST_TAG="latest"${{ inputs.tag-suffix }}
+          echo "latest_tag=$LATEST_TAG" | tee -a $GITHUB_OUTPUT
+
+          FULL_VERSION_TAG=${{ inputs.version-tag }}${{ inputs.tag-suffix }}
+          echo "full_version_tag=$FULL_VERSION_TAG" | tee -a $GITHUB_OUTPUT
+
+          major=`echo ${{ inputs.version-tag }} | cut -d. -f1`
+          minor=`echo ${{ inputs.version-tag }} | cut -d. -f2`
+          revision=`echo ${{ inputs.version-tag }} | cut -d. -f3`
+          MINOR_VERSION_TAG=$(echo "$major.$minor")${{ inputs.tag-suffix }}
+          echo "minor_version_tag=$MINOR_VERSION_TAG" | tee -a $GITHUB_OUTPUT
+
+          DATE=$(date -u +'%Y%m%dt%H%Mz')
+          echo "date=${DATE}" | tee -a $GITHUB_OUTPUT
+          DATE_TAG=${{ inputs.version-tag }}-${DATE}${{ inputs.tag-suffix }}
+          echo "date_tag=${DATE_TAG}" | tee -a $GITHUB_OUTPUT
+
+      - name: Setup and Build
+        id: build_image
+        uses: redhat-actions/s2i-build@v2
+        with:
+          path_context: ${{ inputs.context }}
+          builder_image: ${{ inputs.base-image }}
+          image: ${{ inputs.image-name }}
+          tags: ${{ steps.tags.outputs.latest_tag }}
+
+      - name: Add tags
+        run: | 
+          docker tag ${{ inputs.image-name }}:${{ steps.tags.outputs.latest_tag }} ${{ inputs.image-name }}:${{ steps.tags.outputs.full_version_tag }}
+          docker tag ${{ inputs.image-name }}:${{ steps.tags.outputs.latest_tag }} ${{ inputs.image-name }}:${{ steps.tags.outputs.minor_version_tag }}
+          docker tag ${{ inputs.image-name }}:${{ steps.tags.outputs.latest_tag }} ${{ inputs.image-name }}:${{ steps.tags.outputs.date_tag }}
+          docker image ls
+
+      - name: Push-Image
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: ${{ steps.tags.outputs.latest_tag }} ${{ steps.tags.outputs.full_version_tag }} ${{ steps.tags.outputs.minor_version_tag }} ${{ steps.tags.outputs.date_tag }}
+          registry: ${{ inputs.registry }}
+          username: ${{ secrets.registry-username }}
+          password: ${{ secrets.registry-password }}

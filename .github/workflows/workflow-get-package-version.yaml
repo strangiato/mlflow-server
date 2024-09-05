@@ -30,5 +30,5 @@ jobs:
         id: package-version
         run: |
           cd ${{ inputs.context }}
-          PACKAGE_VERSION=$(pipenv requirements | grep -o -E "${{ inputs.package }}==([0-9]+\.[0-9]+\.[0-9]+)"" | cut -d '=' -f 3)
+          PACKAGE_VERSION=$(pipenv requirements | grep -o -E "${{ inputs.package }}==([0-9]+\.[0-9]+\.[0-9]+)" | cut -d '=' -f 3)
           echo "package_version=$PACKAGE_VERSION" | tee -a $GITHUB_OUTPUT

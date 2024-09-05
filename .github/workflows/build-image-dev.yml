@@ -23,7 +23,7 @@ jobs:
       registry: quay.io/troyer
       image-name: mlflow-server
       context: "mlflow-server"
-      version: ${{ needs.get-version.outputs.package-version }}
+      version-tag: ${{ needs.get-version.outputs.package-version }}
       tag-suffix: "-dev"
     secrets:
       registry-username: ${{ secrets.QUAY_USERNAME }}

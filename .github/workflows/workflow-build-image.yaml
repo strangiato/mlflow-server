@@ -18,11 +18,11 @@ on:
         required: true
         type: string
       base-image:
-        required: true
+        required: false
         type: string
         default: 'registry.access.redhat.com/ubi9/python-311:latest'
       image-check:
-        required: true
+        required: false
         type: boolean
         default: false
         description: Check to see if the base image version already exists.  Fail the job if it does.

@@ -11,7 +11,7 @@ on:
 
 jobs:
   get-version:
-    uses: ./.github/workflow-get-package-version.yaml
+    uses: ./.github/workflows/workflow-get-package-version.yaml
     with: 
       context: "mlflow-server"
       package: mlflow

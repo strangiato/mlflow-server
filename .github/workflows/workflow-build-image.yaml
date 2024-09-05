@@ -21,11 +21,6 @@ on:
         required: false
         type: string
         default: 'registry.access.redhat.com/ubi9/python-311:latest'
-      image-check:
-        required: false
-        type: boolean
-        default: false
-        description: Check to see if the base image version already exists.  Fail the job if it does.
     secrets:
       registry-username:
         required: true
@@ -73,19 +68,6 @@ jobs:
           DATE_TAG=${{ inputs.version-tag }}-${DATE}${{ inputs.tag-suffix }}
           echo "date_tag=${DATE_TAG}" | tee -a $GITHUB_OUTPUT
 
-      - name: Image-Pull-Check
-        id: image_pull_check
-        run: |
-          if [ ${{ inputs.image-check }} ]; then
-            podman login --username ${{ secrets.registry-username }} --password ${{ secrets.registry-password }} ${{ inputs.registry }}
-            if podman manifest inspect ${{ inputs.registry }}/${{ inputs.image-name }}:${{ steps.tags.outputs.version }}; then
-              echo "Image Version " ${{ steps.tags.outputs.version }} " already exists. Please increment the version in the VERSION file to proceed."
-              exit 1
-            else
-              echo "Production image version does not exist, proceeding with new image build"
-            fi
-          fi
-
       - name: Setup and Build
         id: build_image
         uses: redhat-actions/s2i-build@v2
@@ -97,7 +79,6 @@ jobs:
           
       - name: Push-Image
         id: push-to-azure
-        if: steps.image_pull_check.outcome == 'success'
         uses: redhat-actions/push-to-registry@v2
         with:
           image: ${{ steps.build_image.outputs.image }}

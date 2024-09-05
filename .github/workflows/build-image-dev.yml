@@ -16,15 +16,15 @@ jobs:
       context: "mlflow-server"
       package: mlflow
 
-  build:
-    uses: ./.github/workflows/workflow-build-image.yaml
-    needs: get-version
-    with:
-      registry: quay.io/troyer
-      image-name: mlflow-server
-      context: "mlflow-server"
-      version: ${{ needs.get-version.outputs.package-version }}
-      tag-suffix: "-dev"
-    secrets:
-      registry-username: ${{ secrets.QUAY_USERNAME }}
-      registry-password: ${{ secrets.QUAY_PASSWORD }}
+  # build:
+  #   uses: ./.github/workflows/workflow-build-image.yaml
+  #   needs: get-version
+  #   with:
+  #     registry: quay.io/troyer
+  #     image-name: mlflow-server
+  #     context: "mlflow-server"
+  #     version: ${{ needs.get-version.outputs.package-version }}
+  #     tag-suffix: "-dev"
+  #   secrets:
+  #     registry-username: ${{ secrets.QUAY_USERNAME }}
+  #     registry-password: ${{ secrets.QUAY_PASSWORD }}

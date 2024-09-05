@@ -1,0 +1,34 @@
+name: get-package-version
+on:
+  workflow_call:
+    inputs:
+      context:
+        required: true
+        type: string
+      package:
+        required: true
+        type: string
+        default: mlflow
+    outputs:
+      package-version:
+        value: ${{ jobs.get-version.package-version.package_version }}
+
+jobs:
+  get-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5 
+        with: 
+          python-version: '3.11'
+      - name: Install pipenv
+        run: pip install pipenv
+      - name: Get package-version
+        id: package-version
+        run: |
+          cd ${{ inputs.context }}
+          PACKAGE_VERSION=$(pipenv requirements | grep -o -E "${{ inputs.package }}==([0-9]+\.[0-9]+\.[0-9]+)"" | cut -d '=' -f 3)
+          echo "package_version=$PACKAGE_VERSION" | tee -a $GITHUB_OUTPUT

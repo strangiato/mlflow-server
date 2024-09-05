@@ -75,14 +75,19 @@ jobs:
           path_context: ${{ inputs.context }}
           builder_image: ${{ inputs.base-image }}
           image: ${{ inputs.image-name }}
-          tags: ${{ steps.tags.outputs.latest_tag }} ${{ steps.tags.outputs.full_version_tag }} ${{ steps.tags.outputs.minor_version_tag }} ${{ steps.tags.outputs.date_tag }}
-          
+          tags: ${{ steps.tags.outputs.latest_tag }}
+
+      - name: Add tags
+        run: | 
+          docker tag ${{ inputs.image-name }}:${{ steps.tags.outputs.latest_tag }} ${{ steps.tags.outputs.full_version_tag }}
+          docker tag ${{ inputs.image-name }}:${{ steps.tags.outputs.latest_tag }} ${{ steps.tags.outputs.minor_version_tag }}
+          docker tag ${{ inputs.image-name }}:${{ steps.tags.outputs.latest_tag }} ${{ steps.tags.outputs.date_tag }}
+
       - name: Push-Image
-        id: push-to-azure
         uses: redhat-actions/push-to-registry@v2
         with:
           image: ${{ steps.build_image.outputs.image }}
-          tags: ${{ steps.build_image.outputs.tags }}
+          tags: ${{ steps.tags.outputs.latest_tag }} ${{ steps.tags.outputs.full_version_tag }} ${{ steps.tags.outputs.minor_version_tag }} ${{ steps.tags.outputs.date_tag }}
           registry: ${{ inputs.registry }}
           username: ${{ secrets.registry-username }}
           password: ${{ secrets.registry-password }}

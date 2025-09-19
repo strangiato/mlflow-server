@@ -42,11 +42,11 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: downgrade docker 
-        run: |
-          apt-cache madison docker.io
-          sudo apt-get remove containerd.io
-          sudo apt-get install docker.io=24.0.7-0ubuntu2~22.04.1
+      # - name: downgrade docker 
+      #   run: |
+      #     apt-cache madison docker.io
+      #     sudo apt-get remove containerd.io
+      #     sudo apt-get install docker.io=24.0.7-0ubuntu2~22.04.1
 
       - name: Generate tags
         id: tags
